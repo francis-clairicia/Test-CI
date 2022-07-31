@@ -5,7 +5,7 @@ on:
     branches:
     - "*"
   release:
-    types: [created]
+    types: [created, published]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
@@ -77,6 +77,8 @@ jobs:
     if: github.event_name == 'release'
     needs: [dist, dist_check]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     name: Distribute packages
     steps:
