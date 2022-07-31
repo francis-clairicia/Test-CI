@@ -1,11 +1,13 @@
-name: Build/Test/Deploy
+name: Build-Test-Deploy
 
 on:
   push:
     branches:
     - "*"
   release:
-    types: [created, published]
+    types:
+    - created
+    - published
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
