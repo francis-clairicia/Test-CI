@@ -88,8 +88,13 @@ jobs:
         with:
           name: pydiamond-dist
           path: dist
-      - name: List runner content
-        run: ls -lR .
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@v1.5.1
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+          verify_metadata: false  # Already done in dist_check job
       - name: Upload to Github Release
         uses: softprops/action-gh-release@v0.1.14
         with:
