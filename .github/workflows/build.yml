@@ -27,9 +27,9 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
       - name: Install test dependencies
-        run: pip install tox
+        run: pip install tox tox-gh-actions
       - name: Launch tests
-        run: tox -e py
+        run: tox
 
   dist:
     needs: [test]
