@@ -75,7 +75,7 @@ jobs:
         run: twine check --strict dist/*
 
   dist_upload:
-    if: github.event_name == "release"
+    if: github.event_name == 'release'
     needs: [dist, dist_check]
     runs-on: ubuntu-latest
 
