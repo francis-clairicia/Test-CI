@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "example_package_FrankySnow9"
-version = "0.0.1"
+version = "0.0.2"
 description = "A small example package"
 authors = [{name = "FrankySnow9", email = "clairicia.rcj.francis@gmail.com"}]
 readme = "README.md"
@@ -18,3 +18,17 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/francis-clairicia/Test-CI"
+
+[tool.isort]
+profile = "black"
+line_length = 130
+combine_as_imports = true
+add_imports = ["from __future__ import annotations"]
+
+[tool.black]
+line-length = 130
+target_version = ["py37", "py38", "py39", "py310"]
+
+[tool.mypy]
+python_version = "3.7"
+strict = true
