@@ -1,0 +1,67 @@
+name: Reusable 'bump version' workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      part:
+        description: 'The version part to increase'
+        required: true
+        type: string
+      ref:
+        description: 'The branch to checkout (DO NOT GIVE TAG OR SHA)'
+        required: false
+        type: string
+      tag_next_version:
+        description: 'git tag the next version on newly created commit'
+        required: false
+        default: false
+        type: boolean
+      apply:
+        description: 'Push modifications'
+        required: false
+        default: false
+        type: boolean
+  workflow_call:
+    inputs:
+      part:
+        description: 'The version part to increase'
+        required: true
+        type: string
+      ref:
+        description: 'The branch to checkout (DO NOT GIVE TAG OR SHA)'
+        required: false
+        type: string
+      tag_next_version:
+        description: 'git tag the next version on newly created commit'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  increment_version:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    name: Increment ${{ inputs.part }} version
+    steps:
+      - name: Check given ref
+        run: if ${{ !startsWith(inputs.ref, "refs/heads/") }} then; exit 1; fi
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Install dependencies
+        run: pip install bump2version
+      - name: Setup git config
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - name: Increment version
+        run: |
+          bump2version ${{ inputs.part }} --commit ${{ fromJSON('["--no-tag", "--tag"]')[inputs.tag_next_version] }} --verbose
+      - name: Apply modifications
+        if: github.event_name != 'workflow_dispatch' || inputs.apply
+        run: git push
