@@ -30,15 +30,20 @@ jobs:
     # continue-on-error: true
     runs-on: ubuntu-latest
     outputs:
-      should_skip: ${{ steps.skip_duplicate.outputs.should_skip }}
+      should_skip: ${{ steps.skip_duplicate.outputs.should_skip || steps.skip_bump_version.outputs.should_skip }}
 
     name: Verify if checks are needed
     steps:
-      - id: skip_duplicate
+      - name: Skip duplicate run check
+        id: skip_duplicate
         if: github.event_name == 'pull_request'
         uses: fkirc/skip-duplicate-actions@v4
         with:
           paths_ignore: '["**/.gitignore", "**/LICENSE", "**/.bumpversion.cfg", "**/*.md"]'
+      - name: Skip 'Bump version' check
+        id: skip_bump_version
+        if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Bump version')
+        run: echo "::set-output name=should_skip::true"
 
   test:
     needs: [check_needed]
