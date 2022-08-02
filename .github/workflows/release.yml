@@ -1,0 +1,39 @@
+name: Release a version
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  build:
+    name: Build sdist/wheel
+    uses: ./.github/workflows/build-workflow-call.yml
+    with:
+      artifact-name: example-dist
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    name: Distribute packages
+    steps:
+      - name: Retrieve packages
+        uses: actions/download-artifact@v3
+        with:
+          name: example-dist
+          path: dist
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@v1.5.1
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+      - name: Upload to Github Release
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          draft: true
+          files: |
+            dist/*

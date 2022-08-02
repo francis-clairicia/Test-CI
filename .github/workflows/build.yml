@@ -1,4 +1,4 @@
-name: Build-Test-Deploy
+name: Build and test
 
 on:
   pull_request:
@@ -17,10 +17,7 @@ on:
       # re-include current file to not be excluded
       - '!.github/workflows/build.yml'
       # re-include used workflow calls
-      - '!.github/workflows/build-call.yml'
-  release:
-    types:
-      - published
+      - '!.github/workflows/build-workflow-call.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
@@ -48,7 +45,7 @@ jobs:
   dist:
     needs: [test]
     name: Build sdist/wheel
-    uses: ./.github/workflows/build-call.yml
+    uses: ./.github/workflows/build-workflow-call.yml
     with:
       artifact-name: example-dist
 
@@ -71,30 +68,3 @@ jobs:
           path: dist
       - name: twine check
         run: twine check --strict dist/*
-
-  dist_upload:
-    if: github.event_name == 'release'
-    needs: [dist, dist_check]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    name: Distribute packages
-    steps:
-      - name: Retrieve packages
-        uses: actions/download-artifact@v3
-        with:
-          name: example-dist
-          path: dist
-      - name: Publish to TestPyPI
-        uses: pypa/gh-action-pypi-publish@v1.5.1
-        with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
-          verify_metadata: false  # Already done in dist_check job
-      - name: Upload to Github Release
-        uses: softprops/action-gh-release@v0.1.14
-        with:
-          files: |
-            dist/*
