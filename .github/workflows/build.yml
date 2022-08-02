@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   check_needed:
-    # continue-on-error: true
+    continue-on-error: true
     runs-on: ubuntu-latest
     outputs:
       should_skip: ${{ steps.skip_duplicate.outputs.should_skip || steps.skip_bump_version.outputs.should_skip }}
