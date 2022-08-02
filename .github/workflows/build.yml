@@ -1,12 +1,24 @@
 name: Build-Test-Deploy
 
 on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
   push:
     branches:
-    - "*"
+      - main
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - '.bumpversion.cfg'
+      - '*.md'
+      - '.github/workflows/*.yml'
+      # re-include current file to not be excluded
+      - '!.github/workflows/build.yml'
   release:
     types:
-    - published
+      - published
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
