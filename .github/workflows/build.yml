@@ -5,14 +5,16 @@ on:
     types:
       - opened
       - synchronize
+    # paths-ignore not set intentionally, in order to use fkirc/skip-duplicate-actions action
+    # See https://github.com/marketplace/actions/skip-duplicate-actions
   push:
     branches:
       - main
     paths-ignore:
-      - '.gitignore'
-      - 'LICENSE'
+      - '**/.gitignore'
+      - '**/LICENSE'
       - '.bumpversion.cfg'
-      - '*.md'
+      - '**/*.md'
       - '.github/workflows/*.yml'
       # re-include current file to not be excluded
       - '!.github/workflows/build.yml'
@@ -24,7 +26,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check_needed:
+    # continue-on-error: true
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_duplicate.outputs.should_skip }}
+
+    name: Verify if checks are needed
+    steps:
+      - id: skip_duplicate
+        if: github.event_name == 'pull_request'
+        uses: fkirc/skip-duplicate-actions@v4
+        with:
+          paths_ignore: '["**/.gitignore", "**/LICENSE", "**/.bumpversion.cfg", "**/*.md"]'
+
   test:
+    needs: [check_needed]
+    if: ${{ needs.check_needed.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
