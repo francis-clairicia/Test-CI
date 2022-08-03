@@ -27,6 +27,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SOURCE_DATE_EPOCH: ${{ inputs.SOURCE_DATE_EPOCH }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -37,16 +39,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install flit
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Add SOURCE_DATE_EPOCH to environment
+      - name: Compute SOURCE_DATE_EPOCH from commit date
+        if: env.SOURCE_DATE_EPOCH == ''
         run: |
-          if ${{ inputs.SOURCE_DATE_EPOCH != '' }}
-          then
-            SOURCE_DATE_EPOCH=${{ inputs.SOURCE_DATE_EPOCH }}
-          else
-            SOURCE_DATE_EPOCH=`git show ${{ github.sha }} --pretty="%ct" --no-patch`
-          fi
-          echo "Using SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}"
-          echo "SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}" >> $GITHUB_ENV
+          date=`git show ${{ github.sha }} --pretty="%ct" --no-patch`
+          echo "Using SOURCE_DATE_EPOCH=${date}"
+          echo "SOURCE_DATE_EPOCH=${date}" >> $GITHUB_ENV
       - name: Build packages
         run: flit build
       - name: Upload packages as artifacts
