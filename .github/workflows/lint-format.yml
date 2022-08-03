@@ -6,33 +6,18 @@ on:
     types:
       - opened
       - synchronize
-    # paths not set intentionally, in order to use fkirc/skip-duplicate-actions action
-    # See https://github.com/marketplace/actions/skip-duplicate-actions
+    paths:
+      - '**.py'
   push:
     branch:
       - main
     paths:
-      - "**.py"
+      - '**.py'
+      # include current file
+      - '.github/workflows/lint-format.yml'
 
 jobs:
-  check_needed:
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    outputs:
-      should_skip: ${{ steps.skip_run.outputs.should_skip }}
-
-    name: Verify if checks are needed
-    steps:
-      - name: Skip run check
-        id: skip_run
-        if: github.event_name == 'pull_request'
-        uses: fkirc/skip-duplicate-actions@v4
-        with:
-          paths: '["**.py"]'
-
   lint_format_check:
-    needs: [check_needed]
-    if: ${{ needs.check_needed.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     env:
       PROJECT_CONFIG: ${{ github.workspace }}/pyproject.toml
@@ -50,12 +35,12 @@ jobs:
       - name: Format check (black)
         uses: psf/black@stable
         with:
-          options: "--check --diff --config=${{ env.PROJECT_CONFIG }}"
+          options: '--check --diff --config=${{ env.PROJECT_CONFIG }}'
       - name: Format check (isort)
         uses: isort/isort-action@v1.0.0
         if: always()
         with:
-          configuration: "--check-only --diff --settings-file=$PROJECT_CONFIG"
+          configuration: '--check-only --diff --settings-file=$PROJECT_CONFIG'
       - name: Static type hinting check
         if: always()
-        run: mypy --non-interactive --install-types --config-file=$PROJECT_CONFIG ${{ github.workspace }}
+        run: mypy --non-interactive --install-types --config-file=$PROJECT_CONFIG .

@@ -5,8 +5,11 @@ on:
     types:
       - opened
       - synchronize
-    # paths-ignore not set intentionally, in order to use fkirc/skip-duplicate-actions action
-    # See https://github.com/marketplace/actions/skip-duplicate-actions
+    paths-ignore:
+      - '**/.gitignore'
+      - '**/LICENSE'
+      - '.bumpversion.cfg'
+      - '**.md'
   push:
     branches:
       - main
@@ -26,24 +29,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check_needed:
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    outputs:
-      should_skip: ${{ steps.skip_run.outputs.should_skip }}
-
-    name: Verify if checks are needed
-    steps:
-      - name: Skip run check
-        id: skip_run
-        if: github.event_name == 'pull_request'
-        uses: fkirc/skip-duplicate-actions@v4
-        with:
-          paths_ignore: '["**/.gitignore", "**/LICENSE", "**/.bumpversion.cfg", "**.md"]'
-
   test:
-    needs: [check_needed]
-    if: ${{ needs.check_needed.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
