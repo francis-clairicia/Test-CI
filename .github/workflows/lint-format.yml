@@ -17,11 +17,10 @@ on:
       - '.github/workflows/lint-format.yml'
 
 jobs:
-  lint_format_check:
+  check:
     runs-on: ubuntu-latest
     env:
       PROJECT_CONFIG: ${{ github.workspace }}/pyproject.toml
-    name: Lint/Format check
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
