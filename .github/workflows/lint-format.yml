@@ -6,10 +6,8 @@ on:
     types:
       - opened
       - synchronize
-    paths:
-      - "**.py"
-      - "requirements*.txt"
-      - "pyproject.toml"
+    # paths not set intentionally, in order to use fkirc/skip-duplicate-actions action
+    # See https://github.com/marketplace/actions/skip-duplicate-actions
   push:
     branch:
       - main
@@ -36,6 +34,8 @@ jobs:
     needs: [check_needed]
     if: ${{ needs.check_needed.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
+    env:
+      PROJECT_CONFIG: ${{ github.workspace }}/pyproject.toml
     name: Lint/Format check
     steps:
       - uses: actions/checkout@v3
@@ -46,11 +46,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install mypy black isort
-      - name: Format check
-        run: |
-          black --check --diff ${{ github.workspace }}
-          isort --check --diff ${{ github.workspace }}
+          pip install mypy pytest
+      - name: Format check (black)
+        uses: psf/black@stable
+        with:
+          options: "--check --diff --config=${{ env.PROJECT_CONFIG }}"
+      - name: Format check (isort)
+        uses: isort/isort-action@v1.0.0
+        if: always()
+        with:
+          configuration: "--check-only --diff --settings-file=$PROJECT_CONFIG"
       - name: Static type hinting check
         if: always()
-        run: mypy --non-interactive --install-types ${{ github.workspace }}
+        run: mypy --non-interactive --install-types --config-file=$PROJECT_CONFIG ${{ github.workspace }}
