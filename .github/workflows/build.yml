@@ -14,7 +14,7 @@ on:
       - '**/.gitignore'
       - '**/LICENSE'
       - '.bumpversion.cfg'
-      - '**/*.md'
+      - '**.md'
       - '.github/workflows/*.yml'
       # re-include current file to not be excluded
       - '!.github/workflows/build.yml'
@@ -30,16 +30,16 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     outputs:
-      should_skip: ${{ steps.skip_duplicate.outputs.should_skip }}
+      should_skip: ${{ steps.skip_run.outputs.should_skip }}
 
     name: Verify if checks are needed
     steps:
-      - name: Skip duplicate run check
-        id: skip_duplicate
+      - name: Skip run check
+        id: skip_run
         if: github.event_name == 'pull_request'
         uses: fkirc/skip-duplicate-actions@v4
         with:
-          paths_ignore: '["**/.gitignore", "**/LICENSE", "**/.bumpversion.cfg", "**/*.md"]'
+          paths_ignore: '["**/.gitignore", "**/LICENSE", "**/.bumpversion.cfg", "**.md"]'
 
   test:
     needs: [check_needed]
@@ -57,7 +57,10 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
       - name: Install test dependencies
-        run: pip install tox tox-gh-actions
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox tox-gh-actions
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Launch tests
         run: tox
 
