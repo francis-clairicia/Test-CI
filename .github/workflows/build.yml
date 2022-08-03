@@ -30,6 +30,7 @@ concurrency:
 
 jobs:
   test:
+    if: github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'Bump version:')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

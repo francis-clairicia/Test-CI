@@ -18,6 +18,7 @@ on:
 
 jobs:
   check:
+    if: github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'Bump version:')
     runs-on: ubuntu-latest
     env:
       PROJECT_CONFIG: ${{ github.workspace }}/pyproject.toml
@@ -42,4 +43,4 @@ jobs:
           configuration: '--check-only --diff --settings-file=$PROJECT_CONFIG'
       - name: Static type hinting check
         if: always()
-        run: mypy --non-interactive --install-types --config-file=$PROJECT_CONFIG .
+        run: mypy --config-file=$PROJECT_CONFIG .
