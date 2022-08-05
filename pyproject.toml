@@ -19,6 +19,11 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/francis-clairicia/Test-CI"
 
+[tool.flit.sdist]
+exclude = [
+    ".github/"
+]
+
 [tool.isort]
 profile = "black"
 line_length = 130
