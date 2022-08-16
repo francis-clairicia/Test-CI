@@ -88,6 +88,8 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
       - name: Get release branch name
         run: echo "RELEASE_BRANCH_NAME=release/${GITHUB_REF_NAME%.0}" >> $GITHUB_ENV
+      - name: Retrieve all branches
+        run: git fetch origin --prune
       - name: Delete unmaintained release branches
         run: git push --delete origin `git branch --list 'release/*'`
       - name: Create release branch
