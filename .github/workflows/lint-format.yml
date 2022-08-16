@@ -8,6 +8,8 @@ on:
       - synchronize
     paths:
       - '**.py'
+      - 'tox.ini'
+      - 'pyproject.toml'
   push:
     branches:
       - main

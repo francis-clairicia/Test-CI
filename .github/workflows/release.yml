@@ -74,7 +74,7 @@ jobs:
         shell: python
 
   make-release-branch:
-    needs: [version-check, release]
+    needs: [version-check, build]
     if: ${{ needs.version-check.outputs.minor_major_release == 'true' }}
     runs-on: ubuntu-latest
 
