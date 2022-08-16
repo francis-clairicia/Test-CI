@@ -11,6 +11,8 @@ on:
   push:
     branch:
       - main
+    tags-ignore:
+      - '*'
     paths:
       - '**.py'
       # include current file
