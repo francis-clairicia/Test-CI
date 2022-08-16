@@ -12,3 +12,4 @@ jobs:
           fetch-depth: 0
       - run: git fetch origin
       - run: git branch --list
+      - run: git branch --remote --list
