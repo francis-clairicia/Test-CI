@@ -11,5 +11,6 @@ jobs:
         with:
           fetch-depth: 0
       - run: git fetch origin
-      - run: git branch --list
       - run: git branch --remote --list
+      - run: for i in `git branch --remote`; do git branch --track ${i#origin/} $i; done
+      - run: git branch --list
