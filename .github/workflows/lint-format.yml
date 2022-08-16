@@ -9,12 +9,14 @@ on:
     paths:
       - '**.py'
   push:
-    branch:
+    branches:
       - main
     tags-ignore:
       - '*'
     paths:
       - '**.py'
+      - 'tox.ini'
+      - 'pyproject.toml'
       # include current file
       - '.github/workflows/lint-format.yml'
 
