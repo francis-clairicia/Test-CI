@@ -20,6 +20,7 @@ on:
       - '**/LICENSE'
       - '.bumpversion.cfg'
       - '**.md'
+      - '.github/scripts/**'
       - '.github/workflows/*.yml'
       # re-include current file to not be excluded
       - '!.github/workflows/build.yml'
