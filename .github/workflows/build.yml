@@ -41,6 +41,7 @@ on:
       run-tests:
         description: 'Run tests'
         required: false
+        default: true
         type: boolean
   workflow_call:
     inputs:
@@ -55,6 +56,7 @@ on:
       run-tests:
         description: 'Run tests'
         required: false
+        default: true
         type: boolean
 
 concurrency:
