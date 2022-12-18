@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "example_package_FrankySnow9"
-version = "0.17.0"
+version = "0.18.0"
 description = "A small example package"
 authors = [{name = "FrankySnow9", email = "clairicia.rcj.francis@gmail.com"}]
 readme = "README.md"
